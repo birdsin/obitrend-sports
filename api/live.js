@@ -7,11 +7,11 @@ export default async function handler(req, res) {
       source: "demo",
       updatedAt: new Date().toISOString(),
       matches: [
-        { id:1, league:"Premier League", home:"Arsenal", away:"Chelsea", hs:2, as:1, time:"67'", live:true },
-        { id:2, league:"La Liga", home:"Barcelona", away:"Valencia", hs:1, as:0, time:"HT", live:true },
-        { id:3, league:"Serie A", home:"Inter", away:"Roma", hs:0, as:0, time:"31'", live:true },
-        { id:4, league:"Bundesliga", home:"Bayern", away:"Dortmund", time:"18:30", live:false },
-        { id:5, league:"Champions League", home:"Real Madrid", away:"PSG", time:"20:00", live:false },
+        { id:1, league:"Premier League", home:"Arsenal", homeId:100, away:"Chelsea", awayId:101, hs:2, as:1, time:"67'", live:true },
+        { id:2, league:"La Liga", home:"Barcelona", homeId:102, away:"Valencia", awayId:103, hs:1, as:0, time:"HT", live:true },
+        { id:3, league:"Serie A", home:"Inter", homeId:104, away:"Roma", awayId:105, hs:0, as:0, time:"31'", live:true },
+        { id:4, league:"Bundesliga", home:"Bayern", homeId:106, away:"Dortmund", awayId:107, time:"18:30", live:false },
+        { id:5, league:"Champions League", home:"Real Madrid", homeId:108, away:"PSG", awayId:109, time:"20:00", live:false },
         { id:6, league:"NBA", home:"Lakers", away:"Warriors", time:"02:30", live:false }
       ]
     });
