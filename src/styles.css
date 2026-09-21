@@ -47,3 +47,5 @@ button.standing-row:hover{background:#ffffff06}
 .search-result small{display:block;color:#71807b;margin-top:3px;font-size:10px}
 .search-result>svg{color:#687570}
 .global-search{margin-top:8px}
+
+.fav-btn{border:0;background:transparent;color:#687570;font-size:17px;cursor:pointer;padding:0 4px}.fav-btn:hover,.fav-active{color:#c9a86a}.favorites-box{margin-top:24px;border-top:1px solid #ffffff0b;padding-top:16px}.favorites-box h3{margin:0 0 10px}.favorite-list{display:grid;gap:6px}.favorite-list button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 4px;background:transparent;border:0;border-bottom:1px solid #ffffff08;color:#dce2df;text-align:left;cursor:pointer}.favorite-list button span{color:#c9a86a}.favorite-list button b{font-size:12px}
