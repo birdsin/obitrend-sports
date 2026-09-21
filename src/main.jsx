@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Home, Radio, Trophy, User, Search, Play, X, BarChart3 } from "lucide-react";
+import { Home, Radio, Trophy, User, Search, Play, X, BarChart3, RefreshCw } from "lucide-react";
 import "./styles.css";
 
-const matches = [
+const demoMatches = [
   { id:1, league:"Premier League", home:"Arsenal", away:"Chelsea", hs:2, as:1, time:"67'", live:true },
   { id:2, league:"La Liga", home:"Barcelona", away:"Valencia", hs:1, as:0, time:"HT", live:true },
   { id:3, league:"Serie A", home:"Inter", away:"Roma", hs:0, as:0, time:"31'", live:true },
@@ -18,8 +18,37 @@ function App() {
   const [selected,setSelected] = useState(null);
   const [points,setPoints] = useState(1000);
   const [pick,setPick] = useState(null);
+  const [matches,setMatches] = useState(demoMatches);
+  const [dataSource,setDataSource] = useState("demo");
+  const [updatedAt,setUpdatedAt] = useState(null);
+  const [loading,setLoading] = useState(true);
 
-  const filtered = matches.filter(m => (m.home+" "+m.away+" "+m.league).toLowerCase().includes(query.toLowerCase()));
+  const loadMatches = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/live");
+      const data = await response.json();
+      if (Array.isArray(data.matches) && data.matches.length) setMatches(data.matches);
+      setDataSource(data.source || "demo");
+      setUpdatedAt(data.updatedAt || null);
+    } catch {
+      setMatches(demoMatches);
+      setDataSource("demo");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMatches();
+    const timer = setInterval(loadMatches, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const filtered = useMemo(() => matches.filter(m =>
+    (m.home+" "+m.away+" "+m.league).toLowerCase().includes(query.toLowerCase())
+  ), [matches, query]);
+
   const live = matches.filter(m => m.live);
 
   const choosePick = (m, side) => {
@@ -30,10 +59,20 @@ function App() {
   return <div className="app">
     <header className="topbar">
       <div className="brand"><span className="mark">♛</span><div><b>OBITREND</b><small>SPORTS</small></div></div>
-      <div className="top-actions"><div className="points">● {points.toLocaleString()} pts</div><User size={20}/></div>
+      <div className="top-actions">
+        <div className="points">● {points.toLocaleString()} pts</div>
+        <User size={20}/>
+      </div>
     </header>
 
     <main>
+      <div className="data-status">
+        <span className={dataSource==="api-sports" ? "status-live" : "status-demo"}>
+          ● {dataSource==="api-sports" ? "LIVE DATA" : "DEMO DATA"}
+        </span>
+        <button onClick={loadMatches} disabled={loading}><RefreshCw size={13}/> {loading ? "Updating" : "Refresh"}</button>
+      </div>
+
       {page==="Home" && <>
         <section className="hero">
           <div>
@@ -54,15 +93,15 @@ function App() {
 
       {page==="Matches" && <><SectionTitle title="All matches"/><div className="search"><Search size={18}/><input placeholder="Search teams or leagues" value={query} onChange={e=>setQuery(e.target.value)}/></div><div className="match-grid">{filtered.map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)}/>)}</div></>}
 
-      {page==="Picks" && <section className="panel"><SectionTitle title="Practice picks"/><p className="muted">Virtual points only. No real-money wagering is enabled.</p>{matches.slice(0,4).map(m=><div className="pick-row" key={m.id}><div><b>{m.home} vs {m.away}</b><small>{m.league} · {m.live?m.time:m.time}</small></div><div className="pick-buttons"><button className={pick===m.id+"-H"?"picked":""} onClick={()=>choosePick(m,"H")}>{m.home}</button><button className={pick===m.id+"-A"?"picked":""} onClick={()=>choosePick(m,"A")}>{m.away}</button></div></div>)}</section>}
+      {page==="Picks" && <section className="panel"><SectionTitle title="Practice picks"/><p className="muted">Virtual points only. No real-money wagering is enabled.</p>{matches.slice(0,4).map(m=><div className="pick-row" key={m.id}><div><b>{m.home} vs {m.away}</b><small>{m.league} · {m.time}</small></div><div className="pick-buttons"><button className={pick===m.id+"-H"?"picked":""} onClick={()=>choosePick(m,"H")}>{m.home}</button><button className={pick===m.id+"-A"?"picked":""} onClick={()=>choosePick(m,"A")}>{m.away}</button></div></div>)}</section>}
 
-      {page==="Account" && <section className="panel account"><div className="avatar">O</div><h2>OBITREND SPORTS</h2><p className="muted">Account and app settings</p><div className="account-card"><span>Virtual points</span><b>{points.toLocaleString()}</b></div><div className="account-card"><span>Real-money betting</span><b>Not enabled</b></div><div className="account-card"><span>Live video</span><b>Rights required</b></div></section>}
+      {page==="Account" && <section className="panel account"><div className="avatar">O</div><h2>OBITREND SPORTS</h2><p className="muted">Account and app settings</p><div className="account-card"><span>Virtual points</span><b>{points.toLocaleString()}</b></div><div className="account-card"><span>Sports data</span><b>{dataSource==="api-sports" ? "Connected" : "Demo mode"}</b></div><div className="account-card"><span>Real-money betting</span><b>Not enabled</b></div><div className="account-card"><span>Live video</span><b>Rights required</b></div></section>}
     </main>
 
     <nav className="bottom-nav">
-      {[
-        ["Home",Home],["Live",Radio],["Matches",Trophy],["Picks",BarChart3],["Account",User]
-      ].map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>setPage(name)}><Icon size={20}/><span>{name}</span></button>)}
+      {[["Home",Home],["Live",Radio],["Matches",Trophy],["Picks",BarChart3],["Account",User]].map(([name,Icon])=>
+        <button key={name} className={page===name?"active":""} onClick={()=>setPage(name)}><Icon size={20}/><span>{name}</span></button>
+      )}
     </nav>
 
     {selected && <div className="modal-backdrop" onClick={()=>setSelected(null)}>
