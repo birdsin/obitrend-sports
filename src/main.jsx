@@ -48,7 +48,7 @@ function App(){
     </main>
     <nav className="bottom-nav">{[["Home",Home],["Live",Radio],["Matches",Trophy],["Picks",BarChart3],["Account",User]].map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>setPage(name)}><Icon size={20}/><span>{name}</span></button>)}</nav>
     {selected&&<MatchModal match={selected} onClose={()=>setSelected(null)} setProfile={setProfile}/>}
-    {profile&&<ProfileModal profile={profile} onClose={()=>setProfile(null)}/>}
+    {profile&&<ProfileModal profile={profile} onClose={()=>setProfile(null)} favorite={isFavorite(profile.type,profile.id)} onFavorite={()=>toggleFavorite({type:profile.type,id:profile.id,name:profile.name})}/>}
   </div>
 }
 
