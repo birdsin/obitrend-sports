@@ -18,7 +18,11 @@ function App(){
   const [upcoming,setUpcoming]=useState(demoMatches.filter(m=>!m.live));
   const [dataSource,setDataSource]=useState("demo"),[updatedAt,setUpdatedAt]=useState(null),[loading,setLoading]=useState(true);
   const [leagueId,setLeagueId]=useState("39"),[season,setSeason]=useState("2026"),[standings,setStandings]=useState(null),[standingsLoading,setStandingsLoading]=useState(false);
-  const [profile,setProfile]=useState(null);\n  const [favorites,setFavorites]=useState(()=>{try{return JSON.parse(localStorage.getItem("obitrend-favorites")||"[]")}catch{return[]}});\n  useEffect(()=>{localStorage.setItem("obitrend-favorites",JSON.stringify(favorites))},[favorites]);\n  const toggleFavorite=(item)=>setFavorites(f=>f.some(x=>x.type===item.type&&x.id===item.id)?f.filter(x=>!(x.type===item.type&&x.id===item.id)):[...f,item]);\n  const isFavorite=(type,id)=>favorites.some(x=>x.type===type&&x.id===id);
+  const [profile,setProfile]=useState(null);
+  const [favorites,setFavorites]=useState(()=>{try{return JSON.parse(localStorage.getItem("obitrend-favorites")||"[]")}catch{return[]}});
+  useEffect(()=>{localStorage.setItem("obitrend-favorites",JSON.stringify(favorites))},[favorites]);
+  const toggleFavorite=(item)=>setFavorites(f=>f.some(x=>x.type===item.type&&x.id===item.id)?f.filter(x=>!(x.type===item.type&&x.id===item.id)):[...f,item]);
+  const isFavorite=(type,id)=>favorites.some(x=>x.type===type&&x.id===id);
 
   const loadMatches=async()=>{
     setLoading(true);
@@ -43,7 +47,8 @@ function App(){
       {page==="Account"&&<section className="panel account"><div className="avatar">O</div><h2>OBITREND SPORTS</h2><p className="muted">Account and app settings</p><div className="account-card"><span>Virtual points</span><b>{points.toLocaleString()}</b></div><div className="account-card"><span>Sports data</span><b>{dataSource==="api-sports"?"Connected":"Demo mode"}</b></div><div className="account-card"><span>Real-money betting</span><b>Not enabled</b></div><div className="account-card"><span>Live video</span><b>Rights required</b></div><div className="favorites-box"><h3>My favorites</h3>{favorites.length?<div className="favorite-list">{favorites.map(x=><button key={x.type+"-"+x.id} onClick={()=>x.type==="team"?setProfile(x):setSelected(matches.find(m=>m.id===x.id)||upcoming.find(m=>m.id===x.id)||null)}><span>{x.type==="team"?"⚽":"★"}</span><b>{x.name}</b></button>)}</div>:<p className="muted">Star a match or follow a team to keep it here.</p>}</div></section>}
     </main>
     <nav className="bottom-nav">{[["Home",Home],["Live",Radio],["Matches",Trophy],["Picks",BarChart3],["Account",User]].map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>setPage(name)}><Icon size={20}/><span>{name}</span></button>)}</nav>
-    {selected&&<MatchModal match={selected} onClose={()=>setSelected(null)} setProfile={setProfile}/>}\n    {profile&&<ProfileModal profile={profile} onClose={()=>setProfile(null)}/>}
+    {selected&&<MatchModal match={selected} onClose={()=>setSelected(null)} setProfile={setProfile}/>}
+    {profile&&<ProfileModal profile={profile} onClose={()=>setProfile(null)}/>}
   </div>
 }
 
@@ -57,7 +62,7 @@ function SearchPage({setProfile}){
 function SectionTitle({title,action,onClick}){return <div className="section-title"><h2>{title}</h2>{action&&<button onClick={onClick}>{action} →</button>}</div>}
 function MatchCard({m,onClick,favorite,onFavorite}){return <button className="match-card" onClick={onClick}><div className="league">{m.league}<button className={"fav-btn "+(favorite?"fav-active":"")} onClick={e=>{e.stopPropagation();onFavorite()}} aria-label="Favorite">{favorite?"★":"☆"}</button><span className={m.live?"live-dot":"scheduled"}>{m.live?"LIVE":m.time}</span></div><div className="teams"><div><strong>{m.home}</strong>{m.live&&<b>{m.hs}</b>}</div><div><strong>{m.away}</strong>{m.live&&<b>{m.as}</b>}</div></div><div className="card-footer">{m.live?<><span>{m.time}</span><span>Match Centre →</span></>:<span>View match →</span>}</div></button>}
 
-function MatchesPage({filtered,query,setQuery,setSelected,leagueId,setLeagueId,season,setSeason,standings,setStandings,standingsLoading,setStandingsLoading,setProfile}){
+function MatchesPage({filtered,query,setQuery,setSelected,leagueId,setLeagueId,season,setSeason,standings,setStandings,standingsLoading,setStandingsLoading,setProfile,isFavorite,toggleFavorite}){
   const loadStandings=async()=>{setStandingsLoading(true);try{const r=await fetch(`/api/standings?league=${leagueId}&season=${season}`);const d=await r.json();setStandings(d)}catch{setStandings({standings:[]})}finally{setStandingsLoading(false)}};
   useEffect(()=>{loadStandings()},[leagueId,season]);
   const leagues=[["39","Premier League"],["140","La Liga"],["135","Serie A"],["78","Bundesliga"],["2","UEFA Champions League"]];
