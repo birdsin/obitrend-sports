@@ -49,3 +49,7 @@ button.standing-row:hover{background:#ffffff06}
 .global-search{margin-top:8px}
 
 .fav-btn{border:0;background:transparent;color:#687570;font-size:17px;cursor:pointer;padding:0 4px}.fav-btn:hover,.fav-active{color:#c9a86a}.favorites-box{margin-top:24px;border-top:1px solid #ffffff0b;padding-top:16px}.favorites-box h3{margin:0 0 10px}.favorite-list{display:grid;gap:6px}.favorite-list button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 4px;background:transparent;border:0;border-bottom:1px solid #ffffff08;color:#dce2df;text-align:left;cursor:pointer}.favorite-list button span{color:#c9a86a}.favorite-list button b{font-size:12px}
+
+
+.profile-follow{position:absolute;right:54px;top:18px;border:1px solid #c9a86a;background:transparent;color:#c9a86a;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}.follow-active{background:#c9a86a;color:#081019}
+.match-card{cursor:pointer}
