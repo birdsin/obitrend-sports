@@ -1,23 +1,29 @@
 # OBITREND SPORTS
 
-OBITREND SPORTS is a separate sports application.
+Separate OBITREND sports application.
 
-Current MVP:
-- Live-match dashboard
-- Match centre
-- Search
-- Stats/events/lineups UI
+## Current build
+- Responsive sports dashboard
+- Live match view
+- Search and match centre
+- Automatic live-data refresh every 30 seconds
 - Practice picks using virtual points only
-- Responsive mobile layout
+- Vercel API endpoint at /api/live
+- Safe demo fallback when no sports-data API key is configured
 - Live video placeholder pending appropriate streaming rights
 
-Not enabled:
+## Live sports data
+The server endpoint can use API-Sports / API-Football through the Vercel environment variable `APISPORTS_KEY`. The key is server-side only and is never placed in browser code.
+
+Without the key, the app stays in DEMO DATA mode.
+
+## Not enabled
 - Real-money deposits, withdrawals, or wagering
 - Unlicensed sports broadcasts
 
-Next production integrations:
-1. Licensed sports data provider
-2. Supabase authentication/database
-3. Authorized streaming provider
-4. Compliance/licensing before real-money betting
-5. Vercel production deployment
+## Next production stages
+1. Configure the licensed sports-data provider key.
+2. Add Supabase authentication and database.
+3. Add match events, lineups, statistics and standings.
+4. Add authorized streaming integration when rights are secured.
+5. Complete regulatory/compliance work before enabling real-money betting.
