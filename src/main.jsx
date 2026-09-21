@@ -14,7 +14,8 @@ const demoMatches=[
 
 function App(){
   const [page,setPage]=useState("Home"),[query,setQuery]=useState(""),[selected,setSelected]=useState(null);
-  const [points,setPoints]=useState(1000),[pick,setPick]=useState(null),[matches,setMatches]=useState(demoMatches);\n  const [upcoming,setUpcoming]=useState(demoMatches.filter(m=>!m.live));
+  const [points,setPoints]=useState(1000),[pick,setPick]=useState(null),[matches,setMatches]=useState(demoMatches);
+  const [upcoming,setUpcoming]=useState(demoMatches.filter(m=>!m.live));
   const [dataSource,setDataSource]=useState("demo"),[updatedAt,setUpdatedAt]=useState(null),[loading,setLoading]=useState(true);
   const [leagueId,setLeagueId]=useState("39"),[season,setSeason]=useState("2026"),[standings,setStandings]=useState(null),[standingsLoading,setStandingsLoading]=useState(false);
   const [profile,setProfile]=useState(null);
@@ -41,7 +42,7 @@ function App(){
       {page==="Account"&&<section className="panel account"><div className="avatar">O</div><h2>OBITREND SPORTS</h2><p className="muted">Account and app settings</p><div className="account-card"><span>Virtual points</span><b>{points.toLocaleString()}</b></div><div className="account-card"><span>Sports data</span><b>{dataSource==="api-sports"?"Connected":"Demo mode"}</b></div><div className="account-card"><span>Real-money betting</span><b>Not enabled</b></div><div className="account-card"><span>Live video</span><b>Rights required</b></div></section>}
     </main>
     <nav className="bottom-nav">{[["Home",Home],["Live",Radio],["Matches",Trophy],["Picks",BarChart3],["Account",User]].map(([name,Icon])=><button key={name} className={page===name?"active":""} onClick={()=>setPage(name)}><Icon size={20}/><span>{name}</span></button>)}</nav>
-    {selected&&<MatchModal match={selected} onClose={()=>setSelected(null)}/>}
+    {selected&&<MatchModal match={selected} onClose={()=>setSelected(null)} setProfile={setProfile}/>}
   </div>
 }
 
