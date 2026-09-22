@@ -53,3 +53,6 @@ button.standing-row:hover{background:#ffffff06}
 
 .profile-follow{position:absolute;right:54px;top:18px;border:1px solid #c9a86a;background:transparent;color:#c9a86a;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}.follow-active{background:#c9a86a;color:#081019}
 .match-card{cursor:pointer}
+
+
+.top-search{position:relative}.alert-dot{position:absolute;right:7px;top:6px;width:7px;height:7px;border-radius:50%;background:#e6b95e;border:1px solid #050507}.alert-panel{margin-bottom:18px}.followed-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.followed-chips button{border:1px solid rgba(201,168,106,.35);background:rgba(201,168,106,.08);color:#e6b95e;border-radius:999px;padding:9px 13px;cursor:pointer}
