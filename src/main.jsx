@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Home, Radio, Trophy, User, Search, Play, X, BarChart3, RefreshCw, Users, ChevronRight } from "lucide-react";
+import { Home, Radio, Trophy, User, Search, Play, X, BarChart3, RefreshCw, Users, ChevronRight, Bell } from "lucide-react";
 import "./styles.css";
 
 const demoMatches=[
@@ -36,13 +36,13 @@ function App(){
   const choosePick=(m,side)=>{setPick(m.id+"-"+side);setPoints(p=>Math.max(0,p-10));};
 
   return <div className="app">
-    <header className="topbar"><div className="brand"><span className="mark">♛</span><div><b>OBITREND</b><small>SPORTS</small></div></div><div className="top-actions"><button className="top-search" onClick={()=>setPage("Search")} aria-label="Search"><Search size={19}/></button><div className="points">● {points.toLocaleString()} pts</div><User size={20}/></div></header>
+    <header className="topbar"><div className="brand"><span className="mark">♛</span><div><b>OBITREND</b><small>SPORTS</small></div></div><div className="top-actions"><button className="top-search" onClick={()=>setPage("Search")} aria-label="Search"><Search size={19}/></button><button className="top-search" onClick={()=>setPage("Alerts")} aria-label="Alerts"><Bell size={19}/>{favorites.filter(x=>x.type==="team").some(x=>matches.some(m=>m.live&&(m.homeId===x.id||m.awayId===x.id)))&&<i className="alert-dot"/>}</button><div className="points">● {points.toLocaleString()} pts</div><User size={20}/></div></header>
     <main>
       <div className="data-status"><span className={dataSource==="api-sports"?"status-live":"status-demo"}>● {dataSource==="api-sports"?"LIVE DATA":"DEMO DATA"}</span><span className="updated">{updatedAt?new Date(updatedAt).toLocaleTimeString():""}</span><button onClick={loadMatches} disabled={loading}><RefreshCw size={13}/> {loading?"Updating":"Refresh"}</button></div>
       {page==="Home"&&<><section className="hero"><div><span className="eyebrow">LIVE SPORTS HUB</span><h1>Every match.<br/><em>One place.</em></h1><p>Live scores, match centres, statistics and practice picks.</p><button onClick={()=>setPage("Live")} className="gold-btn"><Radio size={17}/> Watch Live Matches</button></div><div className="hero-ball">⚽</div></section><SectionTitle title="Live now" action="See all" onClick={()=>setPage("Live")}/><div className="match-grid">{live.map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)} favorite={isFavorite("match",m.id)} onFavorite={()=>toggleFavorite({type:"match",id:m.id,name:m.home+" vs "+m.away})}/>)}</div><SectionTitle title="Upcoming"/><div className="match-grid">{upcoming.slice(0,6).map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)} favorite={isFavorite("match",m.id)} onFavorite={()=>toggleFavorite({type:"match",id:m.id,name:m.home+" vs "+m.away})}/>)}</div></>}
       {page==="Live"&&<><SectionTitle title="Live matches"/><SearchBox query={query} setQuery={setQuery}/><div className="match-grid">{filtered.filter(m=>m.live).map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)} favorite={isFavorite("match",m.id)} onFavorite={()=>toggleFavorite({type:"match",id:m.id,name:m.home+" vs "+m.away})}/>)}</div></>}
       {page==="Search"&&<SearchPage setProfile={setProfile}/>}
-      {page==="Matches"&&<MatchesPage filtered={[...filtered,...upcoming.filter(u=>!matches.some(m=>m.id===u.id))]} query={query} setQuery={setQuery} setSelected={setSelected} leagueId={leagueId} setLeagueId={setLeagueId} season={season} setSeason={setSeason} standings={standings} setStandings={setStandings} standingsLoading={standingsLoading} setStandingsLoading={setStandingsLoading} setProfile={setProfile}/>}
+      {page==="Alerts"&&<AlertsPage favorites={favorites} matches={matches} upcoming={upcoming} setSelected={setSelected} setPage={setPage}/>}\n      {page==="Matches"&&<MatchesPage filtered={[...filtered,...upcoming.filter(u=>!matches.some(m=>m.id===u.id))]} query={query} setQuery={setQuery} setSelected={setSelected} leagueId={leagueId} setLeagueId={setLeagueId} season={season} setSeason={setSeason} standings={standings} setStandings={setStandings} standingsLoading={standingsLoading} setStandingsLoading={setStandingsLoading} setProfile={setProfile}/>}
       {page==="Picks"&&<section className="panel"><SectionTitle title="Practice picks"/><p className="muted">Virtual points only. No real-money wagering is enabled.</p>{matches.slice(0,4).map(m=><div className="pick-row" key={m.id}><div><b>{m.home} vs {m.away}</b><small>{m.league} · {m.time}</small></div><div className="pick-buttons"><button className={pick===m.id+"-H"?"picked":""} onClick={()=>choosePick(m,"H")}>{m.home}</button><button className={pick===m.id+"-A"?"picked":""} onClick={()=>choosePick(m,"A")}>{m.away}</button></div></div>)}</section>}
       {page==="Account"&&<section className="panel account"><div className="avatar">O</div><h2>OBITREND SPORTS</h2><p className="muted">Account and app settings</p><div className="account-card"><span>Virtual points</span><b>{points.toLocaleString()}</b></div><div className="account-card"><span>Sports data</span><b>{dataSource==="api-sports"?"Connected":"Demo mode"}</b></div><div className="account-card"><span>Real-money betting</span><b>Not enabled</b></div><div className="account-card"><span>Live video</span><b>Rights required</b></div><div className="favorites-box"><h3>My favorites</h3>{favorites.length?<div className="favorite-list">{favorites.map(x=><button key={x.type+"-"+x.id} onClick={()=>x.type==="team"?setProfile(x):setSelected(matches.find(m=>m.id===x.id)||upcoming.find(m=>m.id===x.id)||null)}><span>{x.type==="team"?"⚽":"★"}</span><b>{x.name}</b></button>)}</div>:<p className="muted">Star a match or follow a team to keep it here.</p>}</div></section>}
     </main>
@@ -52,7 +52,15 @@ function App(){
   </div>
 }
 
-function SearchBox({query,setQuery}){return <div className="search"><Search size={18}/><input placeholder="Search teams or leagues" value={query} onChange={e=>setQuery(e.target.value)}/></div>}
+
+
+function AlertsPage({favorites,matches,upcoming,setSelected,setPage}){
+  const teams=favorites.filter(x=>x.type==="team");
+  const followedLive=matches.filter(m=>m.live&&teams.some(t=>t.id===m.homeId||t.id===m.awayId));
+  const followedUpcoming=upcoming.filter(m=>teams.some(t=>t.id===m.homeId||t.id===m.awayId)).slice(0,12);
+  return <section><SectionTitle title="Alerts & following"/><div className="panel alert-panel"><span className="eyebrow">FOLLOWED TEAMS</span><h2>Stay updated</h2><p className="muted">Follow a team from Search, standings or Match Centre to see its matches here.</p>{teams.length?<div className="followed-chips">{teams.map(t=><button key={t.id} onClick={()=>setPage("Search")}>★ {t.name}</button>)}</div>:<button className="gold-btn" onClick={()=>setPage("Search")}><Search size={16}/> Find teams</button>}</div>{followedLive.length>0&&<><SectionTitle title="Live now"/><div className="match-grid">{followedLive.map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)} favorite={true} onFavorite={()=>{}}/>)}</div></>}{followedUpcoming.length>0&&<><SectionTitle title="Upcoming"/><div className="match-grid">{followedUpcoming.map(m=><MatchCard key={m.id} m={m} onClick={()=>setSelected(m)} favorite={true} onFavorite={()=>{}}/>)}</div></>}{teams.length&&!followedLive.length&&!followedUpcoming.length&&<div className="detail-empty">No followed-team matches are available yet.</div>}</section>
+}
+\nfunction SearchBox({query,setQuery}){return <div className="search"><Search size={18}/><input placeholder="Search teams or leagues" value={query} onChange={e=>setQuery(e.target.value)}/></div>}
 
 function SearchPage({setProfile}){
   const [q,setQ]=useState(""),[results,setResults]=useState([]),[loading,setLoading]=useState(false),[searched,setSearched]=useState(false);
